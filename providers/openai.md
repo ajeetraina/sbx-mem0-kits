@@ -38,11 +38,11 @@ sbx run --kit ./kits/openai claude
 ```
 
 Or the **v3** kit (composes onto a v3 workload — see
-[`mem0-openai/`](../mem0-openai)):
+[`v3/mem0-openai/`](../v3/mem0-openai)):
 
 ```bash
 sbx secret set openai
-sbx run docker/sbx-kit-shell:1.0.0 --kit ./mem0-openai .
+sbx run docker/sbx-kit-shell:1.0.0 --kit ./v3/mem0-openai .
 ```
 
 ## What the kit contains

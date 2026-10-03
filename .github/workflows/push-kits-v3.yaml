@@ -9,17 +9,13 @@ name: Publish Kits (v3)
 on:
   pull_request:
     paths:
-      - "mem0/**"
-      - "mem0-openai/**"
-      - "mem0-gemini/**"
+      - "v3/**"
       - "scripts/push-kits-v3.sh"
       - ".github/workflows/push-kits-v3.yaml"
   push:
     branches: [main]
     paths:
-      - "mem0/**"
-      - "mem0-openai/**"
-      - "mem0-gemini/**"
+      - "v3/**"
   workflow_dispatch:
     inputs:
       publish:

@@ -16,8 +16,8 @@ DMR is the zero-config default. It works with no cloud keys, but the embedder an
 > - **Schema v2** (`schemaVersion: "2"`) - the `spec.yaml` at the repo root and
 >   under [`kits/`](./kits). Published with [`scripts/push-kits.sh`](./scripts/push-kits.sh).
 > - **Schema v3** (`schemaVersion: "3"`) - the typed-capability kits under
->   [`mem0/`](./mem0), [`mem0-openai/`](./mem0-openai) and
->   [`mem0-gemini/`](./mem0-gemini). Published with
+>   [`v3/`](./v3): [`v3/mem0/`](./v3/mem0), [`v3/mem0-openai/`](./v3/mem0-openai)
+>   and [`v3/mem0-gemini/`](./v3/mem0-gemini). Published with
 >   [`scripts/push-kits-v3.sh`](./scripts/push-kits-v3.sh). See
 >   [**Schema v3 kits**](#schema-v3-kits) below.
 >
@@ -35,9 +35,9 @@ capabilities** in an OCI-image kit. One directory per provider flavor:
 
 | Directory | Flavor | LLM + embedder | Credential |
 |---|---|---|---|
-| [`mem0/`](./mem0) | DMR (default) | local Docker Model Runner | none |
-| [`mem0-openai/`](./mem0-openai) | OpenAI | `gpt-4o-mini` + `text-embedding-3-small` | `openai` |
-| [`mem0-gemini/`](./mem0-gemini) | Gemini | `gemini-2.5-flash` + `gemini-embedding-001` | `google` |
+| [`v3/mem0/`](./v3/mem0) | DMR (default) | local Docker Model Runner | none |
+| [`v3/mem0-openai/`](./v3/mem0-openai) | OpenAI | `gpt-4o-mini` + `text-embedding-3-small` | `openai` |
+| [`v3/mem0-gemini/`](./v3/mem0-gemini) | Gemini | `gemini-2.5-flash` + `gemini-embedding-001` | `google` |
 
 Each holds a descriptor (`*.yaml`), an overlay recipe (`*.dockerfile`) and a
 staged agent-context file. A v3 mixin **composes onto a v3 workload** (the
@@ -46,15 +46,15 @@ agent name as in v2. Run one straight from this repo against a shell workload:
 
 ```console
 # DMR (needs the two models pulled on the host - see Prerequisites)
-sbx run docker/sbx-kit-shell:1.0.0 --kit ./mem0 .
+sbx run docker/sbx-kit-shell:1.0.0 --kit ./v3/mem0 .
 
 # OpenAI - store the key first; the proxy injects it (the kit holds no key)
 sbx secret set openai
-sbx run docker/sbx-kit-shell:1.0.0 --kit ./mem0-openai .
+sbx run docker/sbx-kit-shell:1.0.0 --kit ./v3/mem0-openai .
 
 # Gemini
 sbx secret set google
-sbx run docker/sbx-kit-shell:1.0.0 --kit ./mem0-gemini .
+sbx run docker/sbx-kit-shell:1.0.0 --kit ./v3/mem0-gemini .
 ```
 
 Inside the sandbox, `python3 -c "import mem0"` works, `~/.mem0/config.json` is

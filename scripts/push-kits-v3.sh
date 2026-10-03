@@ -9,6 +9,8 @@
 #   PUSH=0 ./scripts/push-kits-v3.sh                   # build only, into OCI layouts
 #   KITS="mem0-openai" ./scripts/push-kits-v3.sh       # push a subset
 #
+# The v3 kit directories live under v3/ (v3/mem0, v3/mem0-openai, v3/mem0-gemini).
+#
 # This is the v3 counterpart to push-kits.sh (which publishes the v2 spec.yaml
 # kits with `sbx kit push`). Both the v2 and v3 kits stay published: a v3 mixin
 # only composes onto v3 workloads, a v2 mixin only onto v2 agents.
@@ -68,9 +70,9 @@ publish() {
 KITS="${KITS:-mem0 mem0-openai mem0-gemini}"
 for kit in $KITS; do
   case "$kit" in
-    mem0)        publish "$repo_root/mem0"        mem0.yaml        latest dmr ;;
-    mem0-openai) publish "$repo_root/mem0-openai" mem0-openai.yaml openai ;;
-    mem0-gemini) publish "$repo_root/mem0-gemini" mem0-gemini.yaml gemini ;;
+    mem0)        publish "$repo_root/v3/mem0"        mem0.yaml        latest dmr ;;
+    mem0-openai) publish "$repo_root/v3/mem0-openai" mem0-openai.yaml openai ;;
+    mem0-gemini) publish "$repo_root/v3/mem0-gemini" mem0-gemini.yaml gemini ;;
     *) echo "push-kits-v3: unknown kit '$kit'" >&2; exit 1 ;;
   esac
 done
