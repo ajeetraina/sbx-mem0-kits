@@ -73,6 +73,12 @@ sbx run --kit docker.io/mem0/sbx-mem0-kits:latest claude
 sbx run --kit ./kits/dmr claude
 ```
 
+Or the **v3** kit (composes onto a v3 workload — see [`mem0/`](../mem0)):
+
+```console
+sbx run docker/sbx-kit-shell:1.0.0 --kit ./mem0 .
+```
+
 ## Verify (inside the sandbox)
 
 ```console

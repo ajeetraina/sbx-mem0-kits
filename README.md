@@ -9,12 +9,63 @@ to any sandbox agent, pre-wired to a local [Docker Model Runner](https://docs.do
 
 DMR is the zero-config default. It works with no cloud keys, but the embedder and LLM are both swappable. See [providers/](./providers/) for copy-paste config for OpenAI and Gemini.
 
-> **Schema v2.** These kits use the sbx kit **schema v2** (`schemaVersion: "2"`).
-> If you are porting from the older v1 layout, the field renames are:
+> **Two schemas, both published.** This repo ships the kit in **both** sbx kit
+> schemas, because a v3 mixin only composes onto v3 workloads and a v2 mixin
+> only onto v2 agents:
+>
+> - **Schema v2** (`schemaVersion: "2"`) — the `spec.yaml` at the repo root and
+>   under [`kits/`](./kits). Published with [`scripts/push-kits.sh`](./scripts/push-kits.sh).
+> - **Schema v3** (`schemaVersion: "3"`) — the typed-capability kits under
+>   [`mem0/`](./mem0), [`mem0-openai/`](./mem0-openai) and
+>   [`mem0-gemini/`](./mem0-gemini). Published with
+>   [`scripts/push-kits-v3.sh`](./scripts/push-kits-v3.sh). See
+>   [**Schema v3 kits**](#schema-v3-kits) below.
+>
+> If you are porting from the older v1 layout, the v2 field renames are:
 > `network.allowedDomains` → `permissions.network.allow`,
 > `commands.install` → `setup.install`,
 > `commands.initFiles` → `setup.files`, and
 > top-level `memory` → `agentInstructions.content`.
+
+## Schema v3 kits
+
+The v3 kits express the same thing as the v2 specs — install `mem0ai`, wire
+`~/.mem0/config.json`, set the memory env, allow the right hosts — as **typed
+capabilities** in an OCI-image kit. One directory per provider flavor:
+
+| Directory | Flavor | LLM + embedder | Credential |
+|---|---|---|---|
+| [`mem0/`](./mem0) | DMR (default) | local Docker Model Runner | none |
+| [`mem0-openai/`](./mem0-openai) | OpenAI | `gpt-4o-mini` + `text-embedding-3-small` | `openai` |
+| [`mem0-gemini/`](./mem0-gemini) | Gemini | `gemini-2.5-flash` + `gemini-embedding-001` | `google` |
+
+Each holds a descriptor (`*.yaml`), an overlay recipe (`*.dockerfile`) and a
+staged agent-context file. A v3 mixin **composes onto a v3 workload** (the
+`sbx run <workload> --kit <mixin> .` form), rather than being layered onto an
+agent name as in v2. Run one straight from this repo against a shell workload:
+
+```console
+# DMR (needs the two models pulled on the host — see Prerequisites)
+sbx run docker/sbx-kit-shell:1.0.0 --kit ./mem0 .
+
+# OpenAI — store the key first; the proxy injects it (the kit holds no key)
+sbx secret set openai
+sbx run docker/sbx-kit-shell:1.0.0 --kit ./mem0-openai .
+
+# Gemini
+sbx secret set google
+sbx run docker/sbx-kit-shell:1.0.0 --kit ./mem0-gemini .
+```
+
+Inside the sandbox, `python3 -c "import mem0"` works, `~/.mem0/config.json` is
+wired, and the demo `~/runbooks/` ship as before. The published v3 images reuse
+the same Hub repo and tags as v2 (`:latest`/`:dmr`, `:openai`, `:gemini`), so
+the `--kit docker.io/mem0/sbx-mem0-kits:<tag>` references below resolve to the
+v3 kit on a v3-capable sbx.
+
+> The build/run/verify details of the migration (field mapping, ownership
+> rules, `kit-tck` conformance) follow the Docker Sandboxes
+> [v3 kit spec](https://github.com/docker/sandbox-kit-spec).
 
 
 ## Prerequisites
